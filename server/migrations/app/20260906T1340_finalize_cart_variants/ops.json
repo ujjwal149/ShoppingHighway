@@ -1,0 +1,257 @@
+[
+  {
+    "id": "alterNullability.setNotNull.cartItem.variantId",
+    "label": "Set NOT NULL on \"cartItem\".\"variantId\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "variantId",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"variantId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "cartItem",
+          "variantId"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"variantId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"cartItem\" WHERE \"variantId\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"variantId\"",
+        "sql": "ALTER TABLE \"public\".\"cartItem\" ALTER COLUMN \"variantId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"variantId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "cartItem",
+          "variantId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.cartItem.cartItem_cartId_variantId_key",
+    "label": "Add unique constraint on \"cartItem\" (cartId, variantId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "cartItem_cartId_variantId_key",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"cartItem_cartId_variantId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_cartId_variantId_key",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"cartItem_cartId_variantId_key\"",
+        "sql": "ALTER TABLE \"public\".\"cartItem\" ADD CONSTRAINT \"cartItem_cartId_variantId_key\" UNIQUE (\"cartId\", \"variantId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"cartItem_cartId_variantId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_cartId_variantId_key",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.cartItem.cartItem_productId_fkey",
+    "label": "Drop constraint \"cartItem_productId_fkey\" on \"cartItem\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "cartItem_productId_fkey",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"cartItem_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_productId_fkey",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"cartItem_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"cartItem\" DROP CONSTRAINT \"cartItem_productId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"cartItem_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_productId_fkey",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.cartItem.cartItem_productId_idx_5858600a",
+    "label": "Drop index \"cartItem_productId_idx_5858600a\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "cartItem_productId_idx_5858600a",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"cartItem_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cartItem_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"cartItem_productId_idx_5858600a\"",
+        "sql": "DROP INDEX \"public\".\"cartItem_productId_idx_5858600a\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"cartItem_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cartItem_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.cartItem.cartItem_cartId_productId_key",
+    "label": "Drop constraint \"cartItem_cartId_productId_key\" on \"cartItem\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "cartItem_cartId_productId_key",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"cartItem_cartId_productId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_cartId_productId_key",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"cartItem_cartId_productId_key\"",
+        "sql": "ALTER TABLE \"public\".\"cartItem\" DROP CONSTRAINT \"cartItem_cartId_productId_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"cartItem_cartId_productId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_cartId_productId_key",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.cartItem.productId",
+    "label": "Drop column \"productId\" from \"cartItem\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "productId",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"productId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "cartItem",
+          "productId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"productId\"",
+        "sql": "ALTER TABLE \"public\".\"cartItem\" DROP COLUMN \"productId\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"productId\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "cartItem",
+          "productId"
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,206 @@
+[
+  {
+    "id": "table.productVariant",
+    "label": "Create table \"productVariant\"",
+    "summary": "Creates table \"productVariant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "productVariant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"productVariant\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"productVariant\"",
+        "sql": "CREATE TABLE \"public\".\"productVariant\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"productId\" int4 NOT NULL,\n  \"size\" text NOT NULL,\n  \"sku\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"productVariant\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.productVariant.productVariant_sku_key",
+    "label": "Add unique constraint on \"productVariant\" (sku)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "productVariant_sku_key",
+        "table": "productVariant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"productVariant_sku_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "productVariant_sku_key",
+          "public",
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"productVariant_sku_key\"",
+        "sql": "ALTER TABLE \"public\".\"productVariant\" ADD CONSTRAINT \"productVariant_sku_key\" UNIQUE (\"sku\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"productVariant_sku_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "productVariant_sku_key",
+          "public",
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.productVariant.productVariant_productId_size_key",
+    "label": "Add unique constraint on \"productVariant\" (productId, size)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "productVariant_productId_size_key",
+        "table": "productVariant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"productVariant_productId_size_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "productVariant_productId_size_key",
+          "public",
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"productVariant_productId_size_key\"",
+        "sql": "ALTER TABLE \"public\".\"productVariant\" ADD CONSTRAINT \"productVariant_productId_size_key\" UNIQUE (\"productId\", \"size\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"productVariant_productId_size_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "productVariant_productId_size_key",
+          "public",
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.productVariant.productVariant_productId_idx_5858600a",
+    "label": "Create index \"productVariant_productId_idx_5858600a\" on \"productVariant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "productVariant_productId_idx_5858600a",
+        "table": "productVariant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"productVariant_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"productVariant_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"productVariant_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"productVariant_productId_idx_5858600a\" ON \"public\".\"productVariant\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"productVariant_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"productVariant_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.productVariant.productVariant_productId_fkey",
+    "label": "Add foreign key \"productVariant_productId_fkey\" on \"productVariant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "productVariant_productId_fkey",
+        "table": "productVariant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"productVariant_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "productVariant_productId_fkey",
+          "public",
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"productVariant_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"productVariant\"\nADD CONSTRAINT \"productVariant_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"product\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"productVariant_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "productVariant_productId_fkey",
+          "public",
+          "\"public\".\"productVariant\""
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,245 @@
+[
+  {
+    "id": "table.customerAddress",
+    "label": "Create table \"customerAddress\"",
+    "summary": "Creates table \"customerAddress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "customerAddress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"customerAddress\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"customerAddress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"customerAddress\"",
+        "sql": "CREATE TABLE \"public\".\"customerAddress\" (\n  \"addressLine1\" text NOT NULL,\n  \"addressLine2\" text,\n  \"city\" text NOT NULL,\n  \"country\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customLabel\" text,\n  \"customerId\" int4 NOT NULL,\n  \"fullName\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"isDefault\" bool DEFAULT false NOT NULL,\n  \"label\" text NOT NULL,\n  \"phone\" text NOT NULL,\n  \"postalCode\" text NOT NULL,\n  \"state\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"customerAddress_label_check_c7fd8c28\" CHECK (\"label\" IN ('HOME', 'OFFICE', 'OTHER'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"customerAddress\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"customerAddress\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.orderShippingAddress",
+    "label": "Create table \"orderShippingAddress\"",
+    "summary": "Creates table \"orderShippingAddress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "orderShippingAddress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"orderShippingAddress\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"orderShippingAddress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"orderShippingAddress\"",
+        "sql": "CREATE TABLE \"public\".\"orderShippingAddress\" (\n  \"addressLine1\" text NOT NULL,\n  \"addressLine2\" text,\n  \"city\" text NOT NULL,\n  \"country\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"fullName\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"orderId\" int4 NOT NULL,\n  \"phone\" text NOT NULL,\n  \"postalCode\" text NOT NULL,\n  \"state\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"orderShippingAddress\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"orderShippingAddress\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.orderShippingAddress.orderShippingAddress_orderId_key",
+    "label": "Add unique constraint on \"orderShippingAddress\" (orderId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "orderShippingAddress_orderId_key",
+        "table": "orderShippingAddress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"orderShippingAddress_orderId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderShippingAddress_orderId_key",
+          "public",
+          "\"public\".\"orderShippingAddress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"orderShippingAddress_orderId_key\"",
+        "sql": "ALTER TABLE \"public\".\"orderShippingAddress\" ADD CONSTRAINT \"orderShippingAddress_orderId_key\" UNIQUE (\"orderId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"orderShippingAddress_orderId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderShippingAddress_orderId_key",
+          "public",
+          "\"public\".\"orderShippingAddress\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.customerAddress.customerAddress_customerId_idx_b2a8a46c",
+    "label": "Create index \"customerAddress_customerId_idx_b2a8a46c\" on \"customerAddress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "customerAddress_customerId_idx_b2a8a46c",
+        "table": "customerAddress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"customerAddress_customerId_idx_b2a8a46c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"customerAddress_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"customerAddress_customerId_idx_b2a8a46c\"",
+        "sql": "CREATE INDEX \"customerAddress_customerId_idx_b2a8a46c\" ON \"public\".\"customerAddress\" (\"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"customerAddress_customerId_idx_b2a8a46c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"customerAddress_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.customerAddress.customerAddress_customerId_fkey",
+    "label": "Add foreign key \"customerAddress_customerId_fkey\" on \"customerAddress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "customerAddress_customerId_fkey",
+        "table": "customerAddress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"customerAddress_customerId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "customerAddress_customerId_fkey",
+          "public",
+          "\"public\".\"customerAddress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"customerAddress_customerId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"customerAddress\"\nADD CONSTRAINT \"customerAddress_customerId_fkey\"\nFOREIGN KEY (\"customerId\")\nREFERENCES \"public\".\"customer\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"customerAddress_customerId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "customerAddress_customerId_fkey",
+          "public",
+          "\"public\".\"customerAddress\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.orderShippingAddress.orderShippingAddress_orderId_fkey",
+    "label": "Add foreign key \"orderShippingAddress_orderId_fkey\" on \"orderShippingAddress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "orderShippingAddress_orderId_fkey",
+        "table": "orderShippingAddress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"orderShippingAddress_orderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderShippingAddress_orderId_fkey",
+          "public",
+          "\"public\".\"orderShippingAddress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"orderShippingAddress_orderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"orderShippingAddress\"\nADD CONSTRAINT \"orderShippingAddress_orderId_fkey\"\nFOREIGN KEY (\"orderId\")\nREFERENCES \"public\".\"order\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"orderShippingAddress_orderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderShippingAddress_orderId_fkey",
+          "public",
+          "\"public\".\"orderShippingAddress\""
+        ]
+      }
+    ]
+  }
+]

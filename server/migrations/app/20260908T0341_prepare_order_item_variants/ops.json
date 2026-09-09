@@ -1,0 +1,125 @@
+[
+  {
+    "id": "column.public.orderItem.variantId",
+    "label": "Add column \"variantId\" to \"orderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "variantId",
+        "table": "orderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"variantId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "orderItem",
+          "variantId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"variantId\"",
+        "sql": "ALTER TABLE \"public\".\"orderItem\" ADD COLUMN \"variantId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"variantId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "orderItem",
+          "variantId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.orderItem.orderItem_variantId_idx_e16bb45d",
+    "label": "Create index \"orderItem_variantId_idx_e16bb45d\" on \"orderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "orderItem_variantId_idx_e16bb45d",
+        "table": "orderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"orderItem_variantId_idx_e16bb45d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"orderItem_variantId_idx_e16bb45d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"orderItem_variantId_idx_e16bb45d\"",
+        "sql": "CREATE INDEX \"orderItem_variantId_idx_e16bb45d\" ON \"public\".\"orderItem\" (\"variantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"orderItem_variantId_idx_e16bb45d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"orderItem_variantId_idx_e16bb45d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.orderItem.orderItem_variantId_fkey",
+    "label": "Add foreign key \"orderItem_variantId_fkey\" on \"orderItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "orderItem_variantId_fkey",
+        "table": "orderItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"orderItem_variantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderItem_variantId_fkey",
+          "public",
+          "\"public\".\"orderItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"orderItem_variantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"orderItem\"\nADD CONSTRAINT \"orderItem_variantId_fkey\"\nFOREIGN KEY (\"variantId\")\nREFERENCES \"public\".\"productVariant\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"orderItem_variantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "orderItem_variantId_fkey",
+          "public",
+          "\"public\".\"orderItem\""
+        ]
+      }
+    ]
+  }
+]

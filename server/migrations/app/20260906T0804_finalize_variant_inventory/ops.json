@@ -1,0 +1,176 @@
+[
+  {
+    "id": "alterNullability.setNotNull.inventory.variantId",
+    "label": "Set NOT NULL on \"inventory\".\"variantId\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "variantId",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"variantId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "variantId"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"variantId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"inventory\" WHERE \"variantId\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"variantId\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\" ALTER COLUMN \"variantId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"variantId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "variantId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.inventory.inventory_productId_fkey",
+    "label": "Drop constraint \"inventory_productId_fkey\" on \"inventory\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "inventory_productId_fkey",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"inventory_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_productId_fkey",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"inventory_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\" DROP CONSTRAINT \"inventory_productId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"inventory_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_productId_fkey",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.inventory.inventory_productId_key",
+    "label": "Drop constraint \"inventory_productId_key\" on \"inventory\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "inventory_productId_key",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"inventory_productId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_productId_key",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"inventory_productId_key\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\" DROP CONSTRAINT \"inventory_productId_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"inventory_productId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_productId_key",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.inventory.productId",
+    "label": "Drop column \"productId\" from \"inventory\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "productId",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"productId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "productId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"productId\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\" DROP COLUMN \"productId\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"productId\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "productId"
+        ]
+      }
+    ]
+  }
+]

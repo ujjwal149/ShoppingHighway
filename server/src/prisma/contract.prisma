@@ -1,0 +1,214 @@
+// use prisma-next
+
+model Customer {
+  id           Int               @id @default(autoincrement())
+  name         String
+  email        String            @unique
+  passwordHash String
+
+  carts        Cart?
+  orders       Order[]
+
+  addresses    CustomerAddress[]
+
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+}
+
+model CustomerAddress {
+  id           Int @id @default(autoincrement())
+
+  label        AddressLabel
+  customLabel  String?
+
+  fullName     String
+  phone        String
+
+  addressLine1 String
+  addressLine2 String?
+
+  city         String
+  state        String
+  postalCode   String
+  country      String
+
+  isDefault    Boolean @default(false)
+
+  customerId   Int
+
+  customer     Customer @relation(
+    fields: [customerId],
+    references: [id]
+  )
+
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+}
+
+model Category {
+  id        Int               @id @default(autoincrement())
+  name      String
+
+  parentId  Int?
+  parent    Category?         @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  Category[]        @relation("CategoryHierarchy")
+
+  products  Product[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Product {
+  id        Int               @id @default(autoincrement())
+  sku       String            @unique
+  name      String
+  description String?
+  price     Int
+  rating    Float             @default(0)
+  imageUrl  String 
+
+  categoryId Int
+  category   Category        @relation(fields: [categoryId], references: [id])
+
+  variants  ProductVariant[]
+ 
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model ProductVariant {
+  id        Int              @id @default(autoincrement())
+  sku       String          @unique        
+  size      String
+
+  productId Int
+  product   Product         @relation(fields: [productId], references: [id])
+
+  inventory  Inventory?
+  cartItems  CartItem[]
+
+  orderItems  OrderItem[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString() 
+
+  @@unique([productId, size])
+}
+
+model Inventory {
+  id       Int @id @default(autoincrement())
+  quantity Int @default(0)
+
+  variantId Int            @unique
+  variant   ProductVariant @relation(
+                                    fields: [variantId],
+                                    references: [id]
+                                                      )
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Cart {
+  id         Int               @id @default(autoincrement())
+
+  customerId Int               @unique
+  customer   Customer          @relation(fields: [customerId], references: [id])
+
+  items      CartItem[]
+
+  createdAt  TimestamptzString @default(now())
+  updatedAt  temporal.updatedAtString()
+}
+
+model CartItem {
+  id       Int @id @default(autoincrement())
+  quantity Int @default(1)
+
+  cartId Int
+  cart   Cart @relation(
+    fields: [cartId],
+    references: [id]
+  )
+
+  variantId Int
+  variant   ProductVariant @relation(
+    fields: [variantId],
+    references: [id]
+  )
+
+  @@unique([cartId, variantId])
+}
+
+model Order {
+  id           Int                  @id @default(autoincrement())
+  totalAmount  Int
+  status       String              @default("PENDING")
+
+  customerId   Int
+  customer     Customer            @relation(fields: [customerId], references: [id])
+
+  items        OrderItem[]
+  payment     Payment?
+
+  shippingAddress OrderShippingAddress?
+
+  createdAt    TimestamptzString    @default(now())   
+  updatedAt    temporal.updatedAtString()
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  unitPrice Int
+
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id])
+
+ 
+
+  variantId Int
+  variant   ProductVariant  @relation( fields: [variantId], references: [id] )
+}
+
+model OrderShippingAddress {
+  id           Int @id @default(autoincrement())
+
+  fullName     String
+  phone        String
+
+  addressLine1 String
+  addressLine2 String?
+
+  city         String
+  state        String
+  postalCode   String
+  country      String
+
+  orderId      Int @unique
+
+  order        Order @relation(  fields: [orderId],  references: [id])
+
+  createdAt    TimestamptzString @default(now())
+}
+
+model Payment {
+  id                    Int               @id @default(autoincrement())
+  amount                Int
+  status                String            @default("PENDING")
+  stripePaymentIntentId String?           @unique
+
+  orderId               Int               @unique
+  order                 Order             @relation(fields: [orderId], references: [id])
+
+  createdAt             TimestamptzString @default(now())
+  updatedAt             temporal.updatedAtString()
+}
+
+enum AddressLabel {
+  HOME
+  OFFICE
+  OTHER
+}

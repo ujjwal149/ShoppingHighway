@@ -1,0 +1,125 @@
+[
+  {
+    "id": "column.public.cartItem.variantId",
+    "label": "Add column \"variantId\" to \"cartItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "variantId",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"variantId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "cartItem",
+          "variantId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"variantId\"",
+        "sql": "ALTER TABLE \"public\".\"cartItem\" ADD COLUMN \"variantId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"variantId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "cartItem",
+          "variantId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.cartItem.cartItem_variantId_idx_e16bb45d",
+    "label": "Create index \"cartItem_variantId_idx_e16bb45d\" on \"cartItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "cartItem_variantId_idx_e16bb45d",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"cartItem_variantId_idx_e16bb45d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cartItem_variantId_idx_e16bb45d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"cartItem_variantId_idx_e16bb45d\"",
+        "sql": "CREATE INDEX \"cartItem_variantId_idx_e16bb45d\" ON \"public\".\"cartItem\" (\"variantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"cartItem_variantId_idx_e16bb45d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"cartItem_variantId_idx_e16bb45d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.cartItem.cartItem_variantId_fkey",
+    "label": "Add foreign key \"cartItem_variantId_fkey\" on \"cartItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "cartItem_variantId_fkey",
+        "table": "cartItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"cartItem_variantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_variantId_fkey",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"cartItem_variantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"cartItem\"\nADD CONSTRAINT \"cartItem_variantId_fkey\"\nFOREIGN KEY (\"variantId\")\nREFERENCES \"public\".\"productVariant\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"cartItem_variantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "cartItem_variantId_fkey",
+          "public",
+          "\"public\".\"cartItem\""
+        ]
+      }
+    ]
+  }
+]

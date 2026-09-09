@@ -1,0 +1,171 @@
+[
+  {
+    "id": "column.public.inventory.variantId",
+    "label": "Add column \"variantId\" to \"inventory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "variantId",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"variantId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "variantId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"variantId\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\" ADD COLUMN \"variantId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"variantId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "variantId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.dropNotNull.inventory.productId",
+    "label": "Drop NOT NULL on \"inventory\".\"productId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "productId",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"productId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "productId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop NOT NULL on \"productId\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\" ALTER COLUMN \"productId\" DROP NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"productId\" is nullable",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "inventory",
+          "productId",
+          "YES"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.inventory.inventory_variantId_key",
+    "label": "Add unique constraint on \"inventory\" (variantId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "inventory_variantId_key",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"inventory_variantId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_variantId_key",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"inventory_variantId_key\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\" ADD CONSTRAINT \"inventory_variantId_key\" UNIQUE (\"variantId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"inventory_variantId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_variantId_key",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.inventory.inventory_variantId_fkey",
+    "label": "Add foreign key \"inventory_variantId_fkey\" on \"inventory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "inventory_variantId_fkey",
+        "table": "inventory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"inventory_variantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_variantId_fkey",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"inventory_variantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"inventory\"\nADD CONSTRAINT \"inventory_variantId_fkey\"\nFOREIGN KEY (\"variantId\")\nREFERENCES \"public\".\"productVariant\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"inventory_variantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "inventory_variantId_fkey",
+          "public",
+          "\"public\".\"inventory\""
+        ]
+      }
+    ]
+  }
+]
