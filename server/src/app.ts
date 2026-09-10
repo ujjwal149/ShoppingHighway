@@ -12,9 +12,14 @@ import checkoutRoutes from "./routes/checkout.routes";
 
 import paymentRoutes from "./routes/payment.routes";
 
+import orderRoutes
+  from "./routes/order.routes";
+
 import {
   stripeWebhook,
 } from "./controllers/stripe-webhook.controller";
+
+
 
 const app = express();
 
@@ -60,5 +65,10 @@ app.use("/api/addresses",  addressRoutes,);
 app.use(  "/api/checkout",  checkoutRoutes,);
 
 app.use(  "/api/payments",  paymentRoutes,);
+
+app.use(
+  "/api/orders",
+  orderRoutes,
+);
 
 export default app;

@@ -20,6 +20,7 @@ import ProductsPage from "./pages/ProductsPage";
 import CartPage from "./pages/CartPage";
 import ProductDetailsPage from "./pages/ProductDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import OrdersPage from "./pages/OrdersPage";
 
 import RequireAuth from "./components/auth/RequireAuth";
 
@@ -127,6 +128,15 @@ useEffect(() => {
             element={
               <RequireAuth>
                 <CheckoutPage />
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/orders"
+            element={
+              <RequireAuth>
+                <OrdersPage />
               </RequireAuth>
             }
           />

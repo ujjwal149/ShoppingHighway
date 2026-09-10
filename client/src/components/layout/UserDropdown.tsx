@@ -15,7 +15,15 @@ import {
   useAuthStore,
 } from "../../stores/auth.store";
 
+import {
+  useNavigate,
+} from "react-router-dom";
+
 export default function UserDropdown() {
+
+  const navigate =
+  useNavigate();
+
   const [isOpen, setIsOpen] =
     useState(false);
 
@@ -33,6 +41,14 @@ export default function UserDropdown() {
       (state) =>
         state.openAuthModal,
     );
+
+    const handleOrders = () => {
+      setIsOpen(false);
+    
+      navigate(
+        "/orders",
+      );
+    };
 
   const logout =
     useAuthStore(
@@ -70,11 +86,7 @@ export default function UserDropdown() {
   const handleSignIn = () => {
     setIsOpen(false);
 
-    /*
-     * Manual Sign In should always
-     * open the modal, regardless of
-     * the first-visit dismissal flag.
-     */
+  
     openAuthModal("login");
   };
 
@@ -198,6 +210,9 @@ export default function UserDropdown() {
 
                 <button
                   type="button"
+                  onClick={
+                    handleOrders
+                  }
                   className="
                     flex
                     w-full
@@ -217,9 +232,10 @@ export default function UserDropdown() {
                     size={15}
                     strokeWidth={1.5}
                   />
-
+                
                   Orders
                 </button>
+                  
 
                 <button
                   type="button"
