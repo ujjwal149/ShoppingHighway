@@ -359,14 +359,7 @@ export default function CheckoutPage() {
               selectedAddressId,
           });
 
-        /*
-         * Step 2:
-         * The user explicitly chose to
-         * continue to payment, so now the
-         * backend can create the pending
-         * order, reserve stock, and create
-         * the Stripe PaymentIntent.
-         */
+       
         const payment =
           await startPayment(
             selectedAddressId,
