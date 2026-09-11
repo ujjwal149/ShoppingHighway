@@ -60,11 +60,7 @@ export const signup = async (
           process.env.NODE_ENV ===
           "production",
       
-        sameSite:
-          process.env.NODE_ENV ===
-          "production"
-            ? "none"
-            : "lax",
+        sameSite: "lax",
       
         maxAge:
           7 *
@@ -150,11 +146,7 @@ export const login = async (
           process.env.NODE_ENV ===
           "production",
       
-        sameSite:
-          process.env.NODE_ENV ===
-          "production"
-            ? "none"
-            : "lax",
+        sameSite: "lax",
       
         maxAge:
           7 *
