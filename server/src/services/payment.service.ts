@@ -244,16 +244,7 @@ export const createPaymentIntent =
             })
             .first();
 
-        console.log(
-          "Cart lookup after payment:",
-          {
-            customerId:
-              order.customerId,
-
-            cartId:
-              cart?.id ?? null,
-          },
-        );
+        
 
         if (cart) {
           const cartItems =
@@ -264,19 +255,13 @@ export const createPaymentIntent =
               })
               .all();
 
-          console.log(
-            "Cart items before cleanup:",
-            cartItems.length,
-          );
+          
 
           for (
             const cartItem
             of cartItems
           ) {
-            console.log(
-              "Deleting cart item:",
-              cartItem.id,
-            );
+            
 
             await tx.orm.public.CartItem
               .where({
@@ -295,10 +280,7 @@ export const createPaymentIntent =
               })
               .all();
 
-          console.log(
-            "Cart items after cleanup:",
-            remainingItems.length,
-          );
+          
         }
 
         console.log(
