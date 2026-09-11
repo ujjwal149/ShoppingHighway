@@ -55,11 +55,16 @@ export const signup = async (
       token,
       {
         httpOnly: true,
-        sameSite: "lax",
       
         secure:
           process.env.NODE_ENV ===
           "production",
+      
+        sameSite:
+          process.env.NODE_ENV ===
+          "production"
+            ? "none"
+            : "lax",
       
         maxAge:
           7 *

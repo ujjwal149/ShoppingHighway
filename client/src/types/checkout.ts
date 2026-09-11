@@ -6,6 +6,11 @@ import type {
   CustomerAddress,
 } from "./address";
 
+export type CheckoutStep =
+  | "information"
+  | "shipping"
+  | "payment";
+
 export interface CheckoutItem {
   cartItemId: number;
 
