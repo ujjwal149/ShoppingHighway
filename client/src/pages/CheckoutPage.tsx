@@ -396,19 +396,35 @@ export default function CheckoutPage() {
     };
 
   const handlePaymentSuccess =
-    async (
-      orderId: number,
-    ) => {
-      setSuccessfulOrderId(
-        orderId,
-      );
+  async (
+    orderId: number,
+  ) => {
+    setSuccessfulOrderId(
+      orderId,
+    );
 
-      setCheckoutMessage(
-        null,
-      );
+    setCheckoutMessage(
+      null,
+    );
 
-      clearAuthenticatedCart();
-      
+    /*
+     * Immediately clear the UI.
+     *
+     * Stripe has confirmed the payment,
+     * but the webhook may still be
+     * updating PostgreSQL.
+     */
+    clearAuthenticatedCart();
+
+    /*
+     * Wait for the webhook to finish,
+     * then retry the server cart.
+     */
+    for (
+      let attempt = 0;
+      attempt < 6;
+      attempt++
+    ) {
       await new Promise(
         (resolve) =>
           setTimeout(
@@ -419,13 +435,41 @@ export default function CheckoutPage() {
 
       try {
         await loadCart();
+
+        const items =
+          useCartStore
+            .getState()
+            .items;
+
+        /*
+         * Webhook has finished.
+         */
+        if (
+          items.length === 0
+        ) {
+          console.log(
+            "Cart synchronized after payment.",
+          );
+
+          break;
+        }
+
+        /*
+         * Server still returned the
+         * old cart because webhook
+         * is processing.
+         *
+         * Keep UI empty while waiting.
+         */
+        clearAuthenticatedCart();
       } catch (error) {
         console.error(
-          "Failed to refresh cart after payment:",
+          "Cart sync attempt failed:",
           error,
         );
       }
-    };
+    }
+  };
 
   if (
     isLoadingAddresses

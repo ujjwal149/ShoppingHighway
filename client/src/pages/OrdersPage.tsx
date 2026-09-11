@@ -4,6 +4,7 @@ import {
 } from "react";
 
 import {
+  Check,
   Package,
 } from "lucide-react";
 
@@ -57,9 +58,17 @@ export default function OrdersPage() {
             await getOrders();
 
           setOrders(
-            response.data,
+            [...response.data].sort(
+              (a, b) =>
+                new Date(
+                  b.createdAt,
+                ).getTime() -
+                new Date(
+                  a.createdAt,
+                ).getTime(),
+            ),
           );
-        } catch (error) {
+            } catch (error) {
           console.error(
             "Failed to load orders:",
             error,
@@ -170,11 +179,26 @@ export default function OrdersPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="text-xs font-medium uppercase">
-                        {
-                          order.status
-                        }
-                      </p>
+                      {order.status === "PAID" ? (
+                        <p className="flex items-center justify-end gap-1.5 text-xs font-medium uppercase text-green-600">
+                          <Check
+                            size={14}
+                            strokeWidth={2}
+                          />
+                      
+                          Paid
+                        </p>
+                      ) : order.status === "PENDING" ? (
+                        <p className="text-xs font-medium uppercase text-neutral-400">
+                          Pending
+                        </p>
+                      ) : (
+                        <p className="text-xs font-medium uppercase text-neutral-500">
+                          {
+                            order.status
+                          }
+                        </p>
+                      )}
 
                       <p className="mt-1 text-sm font-medium">
                         {formatCurrency(
